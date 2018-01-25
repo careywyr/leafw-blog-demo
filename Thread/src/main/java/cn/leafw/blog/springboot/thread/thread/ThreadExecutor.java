@@ -1,13 +1,12 @@
 package cn.leafw.blog.springboot.thread.thread;
 
 import cn.leafw.blog.springboot.thread.common.MyAsyncConfigurer;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 
 /**
@@ -17,28 +16,27 @@ import java.util.concurrent.Future;
  */
 public class ThreadExecutor {
 
-    private MyAsyncConfigurer myAsyncConfigurer;
+    private static Executor executor = new MyAsyncConfigurer().getAsyncExecutor();
 
-    public void DataExecutor(){
+    public void DataExecutor() throws Exception{
         //处理数据
         ArrayBlockingQueue<String> queue = new ArrayBlockingQueue<String>(100);
         //消费线程数
         int customerThreads = 5;
-        //异常收集
-        List<Future> futureList = new ArrayList<>();
-        //等待customerThreads个线程执行结束后才会结束
-        CountDownLatch countDownLatch = new CountDownLatch(customerThreads);
-
-        ThreadDataProvider threadDataProvider = new ThreadDataProvider(queue,countDownLatch);
-
-        myAsyncConfigurer.getAsyncExecutor().execute(threadDataProvider);
-
+        //生产者只开一个线程
+        CountDownLatch countDownLatchProvider = new CountDownLatch(1);
+        //消费者开5个线程
+        CountDownLatch countDownLatchConsumer = new CountDownLatch(customerThreads);
+        //启动生产者
+        ThreadDataProvider threadDataProvider = new ThreadDataProvider(queue,countDownLatchProvider);
+        executor.execute(threadDataProvider);
+        countDownLatchProvider.await();
+        //启动消费者
+        for (int i = 0; i < 5; i++) {
+            ThreadAnalyzeDataConsumer threadAnalyzeDataConsumer = new ThreadAnalyzeDataConsumer(queue,countDownLatchConsumer);
+            executor.execute(threadAnalyzeDataConsumer);
+        }
+        countDownLatchConsumer.await();
     }
 
-    @Async
-    public Future<String> asyncInvokeReturnFuture(int i) throws InterruptedException {
-        // Future接收返回值，这里是String类型，可以指明其他类型
-        Future<String> future = new AsyncResult<String>("success:" + i);
-        return future;
-    }
 }

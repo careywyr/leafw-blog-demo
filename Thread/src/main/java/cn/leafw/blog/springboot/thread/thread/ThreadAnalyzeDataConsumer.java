@@ -19,6 +19,7 @@ public class ThreadAnalyzeDataConsumer implements Runnable {
 
     private final CountDownLatch countDownLatch;
 
+
     public ThreadAnalyzeDataConsumer(ArrayBlockingQueue<String> queue, CountDownLatch countDownLatch) {
         this.queue = queue;
         this.countDownLatch = countDownLatch;
@@ -26,6 +27,23 @@ public class ThreadAnalyzeDataConsumer implements Runnable {
 
     @Override
     public void run() {
+        analyzeData();
 
+    }
+
+    private void analyzeData(){
+        boolean isRunning = true;
+        int count = 0;
+        while(isRunning){
+            LOGGER.info("从队列抓取数据！");
+            String data = queue.poll();
+            if(null != data){
+                LOGGER.info("成功获取数据，data={}",data);
+                count++;
+                LOGGER.info(String.valueOf(count));
+            }else{
+                isRunning = false;
+            }
+        }
     }
 }
