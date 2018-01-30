@@ -1,0 +1,17 @@
+server:
+  port: 8762
+  display-name: server2
+
+spring:
+  profiles: server2
+eureka:
+  instance:
+    hostname: server2
+    prefer-ip-address: true
+  client:
+    fetch-registry: false
+    register-with-eureka: false
+    health-check:
+      enabled: true
+    service-url:
+      defaultZone: http://server1:8761/eureka/
