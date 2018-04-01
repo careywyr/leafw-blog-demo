@@ -1,0 +1,4 @@
+user:
+  code: 1001
+  age: 18
+  desc: ${user.code}的年龄是${user.age}
