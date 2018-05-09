@@ -1,0 +1,6 @@
+thread-pool:
+  corePoolSize: 5
+  maxPoolSize: 10
+  queueCapacity: 100
+  keepAliveTime: 1000
+  threadNamePrefix: leafw-service
