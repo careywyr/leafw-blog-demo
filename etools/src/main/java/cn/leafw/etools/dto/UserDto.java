@@ -14,7 +14,7 @@ import java.util.Date;
 public class UserDto {
 
     /**用户编号**/
-    private String userId;
+    private double userId;
     /**用户名**/
     private String userName;
     /**年龄**/
