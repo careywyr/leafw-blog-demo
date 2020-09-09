@@ -1,5 +1,4 @@
-/Thread/target/
-/Thread/.idea/
-/Thread/thread.iml
+*.class
 /*/.idea
 /*/*.iml
+target/
