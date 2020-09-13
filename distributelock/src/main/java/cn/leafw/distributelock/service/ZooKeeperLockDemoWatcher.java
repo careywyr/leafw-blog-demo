@@ -2,6 +2,7 @@ package cn.leafw.distributelock.service;
 
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -210,7 +211,7 @@ public class ZooKeeperLockDemoWatcher implements Watcher {
             } else {
                 // 如果不是最小的，则等待锁
                 System.out.println(threadName + " 写请求，当前序号不是最小 ---> inventory = " + inventory);
-                zooKeeper.getChildren(ROOT_LOCK_SHARE, sharedLockWatch(operationType, lockPath, countDownLatch));
+                acquireLockWithHerdEffect(operationType, lockPath, countDownLatch);
             }
         } else {
             // 如果是读请求，如果没有比自己序号小的子节点，或是所有比自己序号小的子节点都是读请求，那么表明自己已经成功获取到了共享锁，同时开始执行读取逻辑；如果比自己序号小的子节点中有写请求，那么就需要进入等待。
@@ -226,7 +227,8 @@ public class ZooKeeperLockDemoWatcher implements Watcher {
                 // 如果有写的，等待
                 if (writeCount > 0) {
                     System.out.println(threadName + " 读请求，比自己小的节点有写操作 ----> inventory = " + inventory);
-                    zooKeeper.getChildren(ROOT_LOCK_SHARE, sharedLockWatch(operationType, lockPath, countDownLatch));
+                    acquireLockWithHerdEffect(operationType, lockPath, countDownLatch);
+//                    zooKeeper.getChildren(ROOT_LOCK_SHARE, sharedLockWatch(operationType, lockPath, countDownLatch));
                 } else {
                     System.out.println(threadName + " 读请求，比自己小的节点没有写操作 ----> inventory = " + inventory);
                     System.out.println(threadName + " 删除节点: " + lockPath);
