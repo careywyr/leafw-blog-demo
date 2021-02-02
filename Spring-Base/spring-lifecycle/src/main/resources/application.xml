@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <beans>
+        <bean name="myInstantiationAwareBeanPostProcessor" class="cn.leafw.spring.beans.MyInstantiationAwareBeanPostProcessor" />
+        <bean name="demoBean" class="cn.leafw.spring.beans.DemoBean" init-method="init">
+        </bean>
+    </beans>
+</beans>
